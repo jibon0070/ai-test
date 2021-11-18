@@ -29,6 +29,8 @@ export class Dot extends Entity {
       if (this.brain.directions.length > this.brain.step) {
         this.acceleration = this.brain.directions[this.brain.step];
         this.brain.step++;
+      } else {
+        this.dead = true;
       }
 
 

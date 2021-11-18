@@ -1,17 +1,18 @@
 import {Entity} from "./Entity";
 import {Dot} from "../entitis/Dot";
+import {Population} from "../entitis/Population";
 
 export class Game {
   ctx: CanvasRenderingContext2D;
   private game_objects: Entity[] = [];
-  private dot!: Dot;
+  private dot!: Population;
   constructor(public canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d')!;
   }
 
   start() {
-    this.dot = new Dot(this);
-    this.game_objects = [this.dot];
+    this.dot = new Population(1000, this);
+    this.game_objects = [...this.dot.dots];
   }
 
   update(delta_time: number) {
