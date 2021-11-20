@@ -21,7 +21,7 @@ export class Dot extends Entity {
     this.velocity = new Vector(0, 0);
     this.size = new Vector(10, 10);
     this.position = new Vector((game.canvas.width / 2), game.canvas.height - 20);
-    this.brain = new Brain(10000);
+    this.brain = new Brain(10000, game);
   }
 
   draw(): void {
@@ -50,31 +50,31 @@ export class Dot extends Entity {
         this.dead = true;
       }
       this.velocity.add(this.acceleration);
-      // this.velocity.add(new Vector(1, 0));
+      // this.velocity.add(new Vector(0, 1));
 
       this.velocity.limit(5);
       this.position.add(this.velocity);
       //collation check
       //top
-      if (this.position.y < 0) {
+      if (this.position.y <= 0) {
         // this.acceleration.reverse();
         // this.velocity.reverse();
         this.dead = true;
       }
       //left
-      else if (this.position.x < 0) {
+      else if (this.position.x <= 0) {
         // this.acceleration.reverse();
         // this.velocity.reverse();
         this.dead = true
       }
       //bottom
-      else if (this.position.y - this.size.y > this.game.canvas.height) {
+      else if (this.position.y - this.size.y >= this.game.canvas.height) {
         // this.acceleration.reverse();
         // this.velocity.reverse();
         this.dead = true
       }
       //right
-      else if (this.position.x - this.size.x > this.game.canvas.width) {
+      else if (this.position.x - this.size.x >= this.game.canvas.width) {
         // this.acceleration.reverse();
         // this.velocity.reverse();
         this.dead = true
@@ -87,9 +87,9 @@ export class Dot extends Entity {
   }
 
   calculate_fitness() {
-    this.fitness = 1000/Vector.distance(this.position, this.game.goal.position)
+    this.fitness += 1000/Vector.distance(this.position, this.game.goal.position)
     if (this.goal_reached) {
-      this.fitness += 1000 / this.brain.step;
+      this.fitness += 1000;
     }
     // if (this.goal_reached) {
     //   this.fitness += 1 / 16 + 1000 / (this.brain.step * this.brain.step);

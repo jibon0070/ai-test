@@ -2,5 +2,20 @@
 <div class="info">
   Generation: <span id="gen">1</span><br>
   Best Step: <span id="min_step"></span>
+  <div class="mutation-info">
+    <h4>Mutation Info</h4>
+    <div class="counter">
+      <div class="style start">
+        <i class="fas fa-sort-up" (click)="handle_counter($event, '+')"></i>
+        <input type="number">
+        <i class="fas fa-sort-down" (click)="handle_counter($event, '-')"></i>
+      </div>
+      <div class="style end">
+        <i class="fas fa-sort-up" (click)="handle_counter($event, '+')"></i>
+        <input type="number">
+        <i class="fas fa-sort-down" (click)="handle_counter($event, '-')"></i>
+      </div>
+    </div>
+  </div>
 </div>
 <router-outlet></router-outlet>

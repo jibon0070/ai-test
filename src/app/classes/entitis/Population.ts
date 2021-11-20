@@ -15,11 +15,27 @@ export class Population extends Entity {
   min_step = 1000;
   private info_panel: HTMLDivElement;
   best_step = 1000;
+  mutation_start: HTMLInputElement;
+  mutation_end: HTMLInputElement;
+  private first_goal: boolean = false;
+
+  private get goal_reached(): Boolean {
+    for (let d of this.dots) {
+      if (d.goal_reached) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   constructor(size: number, private game: Game) {
     super();
     this.dots = new Array(size).fill(0).map(_ => (new Dot(game)));
     this.info_panel = document.querySelector('.info')!
+    this.mutation_start = this.info_panel.querySelector('.mutation-info .counter .start input')!;
+    this.mutation_end = this.info_panel.querySelector('.mutation-info .counter .end input')!;
+    this.mutation_start.value = '0';
+    this.mutation_end.value = this.best_step.toString();
     game.canvas.addEventListener("click", e => {
       this.dots.forEach(dot => {
         dot.position.x = e.clientX
@@ -33,6 +49,7 @@ export class Population extends Entity {
   }
 
   update(delta_time: number): void {
+
     //check for obstacle
     for (let obstacle of this.game.obstacles) {
       for (let dot of this.dots) {
@@ -40,17 +57,30 @@ export class Population extends Entity {
           // dot.acceleration.reverse();
           // dot.velocity.reverse();
           dot.dead = true;
-          dot.fitness -= 1;
+          // dot.fitness -= .0000001;
         }
       }
     }
     if (this.all_dead) {
       this.calculate_fitness();
+      this.set_best_dot();
+      this.info_panel.querySelector<HTMLSpanElement>('#gen')!.innerHTML = this.gen.toString();
+      this.info_panel.querySelector<HTMLSpanElement>('#min_step')!.innerHTML = this.best_step.toString();
+      if (this.goal_reached) {
+        if (!this.first_goal) {
+          this.mutation_start.value = (this.best_step).toString();
+        }
+        this.mutation_start.value = (parseInt(this.mutation_start.value) - 1).toString();
+        this.mutation_end.value = this.mutation_start.value;
+        this.first_goal = true;
+      } else {
+        this.mutation_end.value = this.best_step.toString();
+        this.mutation_start.value = (this.best_step - 50).toString();
+      }
       this.natural_selection();
       this.mutate_baby();
     }
-    this.info_panel.querySelector<HTMLSpanElement>('#gen')!.innerText = this.gen.toString();
-    this.info_panel.querySelector<HTMLSpanElement>('#min_step')!.innerText = this.best_step.toString();
+
   }
 
   calculate_fitness() {
@@ -70,7 +100,6 @@ export class Population extends Entity {
 
   private natural_selection() {
     const newDots = [];
-    this.set_best_dot();
     newDots[0] = this.dots[this.best_dot].give_baby();
     newDots[0].is_best = true;
     for (let i = 1; i < this.dots.length; i++) {
@@ -81,24 +110,6 @@ export class Population extends Entity {
     this.gen++;
   }
 
-  private calculate_fitness_sum() {
-    this.fitness_sum = 0;
-    this.fitness_sum = this.dots.map(row => row.fitness).reduce((a, b) => {
-      return a + b;
-    });
-  }
-
-  get select_parent(): Dot {
-    const random = Math.random() * this.fitness_sum;
-    let running_sum = 0;
-    for (let i = 0; i < this.dots.length; i++) {
-      running_sum += this.dots[i].fitness;
-      if (running_sum > random) {
-        return this.dots[i];
-      }
-    }
-    return this.dots[0];
-  }
 
   private mutate_baby() {
     for (let i = 1; i < this.dots.length; i++) {
@@ -109,11 +120,24 @@ export class Population extends Entity {
   set_best_dot() {
     let max = 0;
     let maxIndex = 0;
-    for (let i = 0; i < this.dots.length; i++) {
-      if (this.dots[i].fitness > max) {
-        max = this.dots[i].fitness;
-        maxIndex = i;
+    const goal_reached = this.goal_reached;
+    let minStep = 1000;
+    let i = 0;
+    for (let dot of this.dots) {
+      if (!goal_reached) {
+        if (dot.fitness > max) {
+          max = dot.fitness;
+          maxIndex = i;
+        }
+      } else {
+        if (dot.goal_reached) {
+          if (minStep > dot.brain.step) {
+            minStep = dot.brain.step;
+            maxIndex = i;
+          }
+        }
       }
+      i++;
     }
     this.best_dot = maxIndex;
     this.best_step = this.dots[this.best_dot].brain.step;

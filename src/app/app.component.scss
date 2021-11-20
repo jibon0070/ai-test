@@ -3,4 +3,15 @@
   top: 0;
   right: 0;
   font-size: xx-large;
+  .mutation-info {
+    .counter {
+      display: flex;
+      .style {
+        width: 50%;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
 }

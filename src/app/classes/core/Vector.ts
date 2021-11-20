@@ -45,23 +45,18 @@ export class Vector {
   static does_collide(position: Vector, size1: Vector, position2: Vector, size2: Vector): boolean {
 
     if (
-      position.y < position2.y + size2.y &&
-      position.x < position2.x + size2.x &&
-      position.x + size1.x > position2.x &&
-      position.y + size1.y > position2.y
+      position.y <= position2.y + size2.y &&
+      position.x <= position2.x + size2.x &&
+      position.x + size1.x >= position2.x &&
+      position.y + size1.y >= position2.y
     ) {
-
       // //top of the ball
-      // if (position.y < position2.y + size2.y && position.y + size1.y > position2.y + size2.y / 2 && (position2.x > position2.x && position.x - size1.x < position2.x+ size2.x)) {
+      // if (position.y <= position2.y + size2.y && position.y + size1.y > position2.y + size2.y / 2) {
       //   position.y = position2.y + size2.y
       // }
       // //bottom of the ball
-      // if (position.y + size1.y > position2.y && position.y < position2.y + size2.y / 2 && (position2.x> position2.x && position.x - size1.x < position2.x+ size2.x)) {
+      // if (position.y + size1.y >= position2.y && position.y < position2.y - size2.x / 2) {
       //   position.y = position2.y - size1.y
-      // }
-      // // right of the ball
-      // if (position.x + size1.x > position2.x && position.x > position2.x / size2.x) {
-      //   position.x = position2.x - size1.x
       // }
       return true;
     }
